@@ -25,7 +25,7 @@ keep every screen working.
     <td align="center" width="33%"><img src="docs/screenshots/03-cooking.png" width="230" alt="Cooking view" /><br /><b>Cook with timers</b><br /><sub>Step-by-step instructions with a countdown on every step that needs one, then "I cooked this" to deduct what you used.</sub></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><img src="docs/screenshots/04-dish-scan.png" width="230" alt="Dish scan" /><br /><b>Name a dish from a photo</b><br /><sub>Snap a meal and get its name, cuisine and a recipe to make it at home. Shown here in offline simulation; with a Claude API key the photo is really analysed.</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/04-dish-scan.png" width="230" alt="Dish scan" /><br /><b>Name a dish from a photo</b><br /><sub>Snap a meal you loved and PantryChef names it, lists its key ingredients and writes a recipe to make it at home, with what you already have marked.</sub></td>
     <td align="center" width="33%"><img src="docs/screenshots/05-stores-nearby.png" width="230" alt="Nearby stores" /><br /><b>Find where to buy</b><br /><sub>Supermarkets near you on a map with distances and directions, or online grocers for your region with your list copied.</sub></td>
     <td width="33%"></td>
   </tr>

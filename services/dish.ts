@@ -63,6 +63,46 @@ type SimulatedDish = { dish: DishIdentification; recipe: Omit<Recipe, 'id' | 'cr
 const SIMULATED_DISHES: SimulatedDish[] = [
   {
     dish: {
+      name: 'Couscous with lamb and vegetables',
+      cuisine: 'Tunisian',
+      description: 'Steamed semolina couscous topped with slow-cooked lamb, carrots, potatoes, courgettes and chickpeas in a spiced red broth.',
+      confidence: 0.92,
+      keyIngredients: ['Couscous', 'Lamb', 'Carrots', 'Chickpeas', 'Tomato paste', 'Harissa'],
+    },
+    recipe: {
+      title: 'Tunisian couscous with lamb',
+      description: 'The Sunday classic: lamb simmered in a tomato and harissa broth with vegetables, spooned over fluffy couscous.',
+      emoji: '🍲',
+      prepMinutes: 25,
+      cookMinutes: 90,
+      servings: 6,
+      difficulty: 'medium',
+      ingredients: [
+        { name: 'Couscous', amount: '500 g', inPantry: false },
+        { name: 'Lamb shoulder', amount: '800 g', inPantry: false },
+        { name: 'Onion', amount: '1', inPantry: false },
+        { name: 'Tomato paste', amount: '2 tbsp', inPantry: false },
+        { name: 'Harissa', amount: '1 tbsp', inPantry: false },
+        { name: 'Carrots', amount: '3', inPantry: false },
+        { name: 'Potatoes', amount: '3', inPantry: false },
+        { name: 'Courgette', amount: '2', inPantry: false },
+        { name: 'Chickpeas', amount: '1 can', inPantry: false },
+        { name: 'Olive oil', amount: '3 tbsp', inPantry: false },
+        { name: 'Coriander seeds', amount: '1 tsp', inPantry: false },
+        { name: 'Green chillies', amount: '2', inPantry: false },
+      ],
+      steps: steps([
+        ['Brown the lamb pieces with the chopped onion in olive oil in a large pot.', 8],
+        ['Stir in the tomato paste, harissa, and coriander seeds and cook until dark and fragrant.', 3],
+        ['Cover with water, bring to a simmer, and cook the lamb until tender.', 45],
+        ['Add the carrots and potatoes and simmer, then the courgettes and chickpeas.', 25],
+        ['Meanwhile moisten the couscous, steam it over the broth, and fluff it with a little oil.', 20],
+        ['Pile the couscous on a platter, arrange the meat and vegetables on top, and ladle over the broth. Serve the chillies alongside.'],
+      ]),
+    },
+  },
+  {
+    dish: {
       name: 'Shakshuka',
       cuisine: 'Middle Eastern',
       description: 'Eggs poached in a spiced tomato and pepper sauce, usually served straight from the pan with bread.',
@@ -287,8 +327,8 @@ function hash(input: string): number {
   return value;
 }
 
-function simulateDish(photoUri: string, pantry: InventoryItem[]): DishScanResult {
-  const pick = SIMULATED_DISHES[hash(photoUri) % SIMULATED_DISHES.length];
+function simulateDish(photoUri: string, seed: string, pantry: InventoryItem[]): DishScanResult {
+  const pick = SIMULATED_DISHES[hash(seed) % SIMULATED_DISHES.length];
   const recipe: Recipe = { ...pick.recipe, id: createId(), createdAt: new Date().toISOString() };
   return {
     photoUri,
@@ -382,5 +422,5 @@ export async function identifyDish(
       reject(new AiError('Dish analysis was cancelled.', false));
     });
   });
-  return simulateDish(photo.uri, pantry);
+  return simulateDish(photo.uri, photo.assetId ?? photo.uri, pantry);
 }

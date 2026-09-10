@@ -118,6 +118,8 @@ export interface PhotoInput {
   uri: string;
   base64?: string | null;
   mimeType?: string | null;
+  /** Stable library identifier when the photo came from the picker. */
+  assetId?: string | null;
 }
 
 /**

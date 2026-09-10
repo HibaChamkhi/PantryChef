@@ -70,7 +70,7 @@ export default function ScanScreen() {
       const result = await ImagePicker.launchImageLibraryAsync(pickerOptions);
       if (result.canceled || result.assets.length === 0) return;
       const asset = result.assets[0];
-      await analyze({ uri: asset.uri, base64: asset.base64, mimeType: asset.mimeType });
+      await analyze({ uri: asset.uri, base64: asset.base64, mimeType: asset.mimeType, assetId: asset.assetId });
     } catch {
       Alert.alert(t('addItem.photoAccess'), t('addItem.photoAccessHint'));
     }

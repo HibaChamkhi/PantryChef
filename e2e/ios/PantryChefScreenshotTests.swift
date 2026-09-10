@@ -49,8 +49,12 @@ final class PantryChefScreenshotTests: XCTestCase {
         let image = app.images.firstMatch
         guard image.waitForExistence(timeout: 20) else { return }
         sleep(1)
-        let thumbnail = app.images.allElementsBoundByIndex.first { $0.frame.width > 80 && $0.frame.width < 260 && $0.frame.minY > 60 }
-        (thumbnail ?? image).coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        // Newest photo last in reading order: the food photo added for the README.
+        let thumbnails = app.images.allElementsBoundByIndex.filter { $0.frame.width > 80 && $0.frame.width < 260 && $0.frame.minY > 60 }
+        let newest = thumbnails.max { a, b in
+            a.frame.minY != b.frame.minY ? a.frame.minY < b.frame.minY : a.frame.minX < b.frame.minX
+        }
+        (newest ?? image).coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 
     func testCaptureScreens() throws {

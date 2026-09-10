@@ -45,7 +45,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test:ui": "/usr/bin/ruby scripts/ios-ui-tests.rb && xcrun simctl privacy booted grant photos com.pantrychef.app && xcrun simctl privacy booted grant location com.pantrychef.app && xcrun simctl location booted set 36.8065,10.1815 && xcodebuild test -workspace ios/PantryChef.xcworkspace -scheme PantryChefUITests -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -quiet"
+    "test:ui": "/usr/bin/ruby scripts/ios-ui-tests.rb && xcrun simctl privacy booted grant photos com.pantrychef.app && xcrun simctl privacy booted grant location com.pantrychef.app && xcrun simctl location booted set 36.8065,10.1815 && xcodebuild test -workspace ios/PantryChef.xcworkspace -scheme PantryChefUITests -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -quiet -only-testing:PantryChefUITests/PantryChefUITests",
+    "screenshots": "/usr/bin/ruby scripts/ios-ui-tests.rb && xcrun simctl privacy booted grant photos com.pantrychef.app && xcrun simctl privacy booted grant location com.pantrychef.app && xcrun simctl location booted set 36.8065,10.1815 && xcodebuild test -workspace ios/PantryChef.xcworkspace -scheme PantryChefUITests -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -quiet -only-testing:PantryChefUITests/PantryChefScreenshotTests -resultBundlePath docs/screenshots.xcresult && node scripts/export-screenshots.mjs"
   },
   "private": true
 }

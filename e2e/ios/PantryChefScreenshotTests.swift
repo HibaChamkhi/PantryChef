@@ -81,7 +81,7 @@ final class PantryChefScreenshotTests: XCTestCase {
         app.buttons["Choose a dish photo"].tap()
         pickPhoto()
         wait(anyText(containing: "recipes for this dish"), 60)
-        shot("04-dish-scan")
+        shot("04-dish-scan-meal")
 
         tab("Shopping").tap()
         wait(app.staticTexts["Shopping list"])

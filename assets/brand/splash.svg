@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6b9457"/>
+      <stop offset="1" stop-color="#3b5431"/>
+    </linearGradient>
+    <linearGradient id="hat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f0eadb"/>
+    </linearGradient>
+    <clipPath id="round"><rect width="1024" height="1024" rx="230"/></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+    <circle cx="512" cy="560" r="330" fill="#ffffff" opacity="0.08"/>
+    <g fill="url(#hat)">
+      <circle cx="512" cy="360" r="165"/>
+      <circle cx="372" cy="430" r="120"/>
+      <circle cx="652" cy="430" r="120"/>
+      <rect x="322" y="430" width="380" height="180"/>
+    </g>
+    <rect x="322" y="600" width="380" height="118" rx="30" fill="#ffffff"/>
+    <rect x="322" y="600" width="380" height="16" fill="#e4dbc5"/>
+    <g stroke="#e4dbc5" stroke-width="10" stroke-linecap="round">
+      <line x1="392" y1="640" x2="392" y2="680"/>
+      <line x1="512" y1="640" x2="512" y2="680"/>
+      <line x1="632" y1="640" x2="632" y2="680"/>
+    </g>
+    <g transform="translate(560 250) rotate(-30)">
+      <path d="M0 0 C 60 -90, 170 -110, 220 -80 C 190 -10, 90 40, 0 0 Z" fill="#a7bf98"/>
+      <path d="M6 -2 C 70 -40, 140 -70, 210 -78" stroke="#5f844e" stroke-width="10" fill="none" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(560 250) rotate(-30)">
+      <path d="M0 0 C 40 60, 120 100, 180 70 C 160 20, 80 -20, 0 0 Z" fill="#cbd9c1"/>
+    </g>
+  </g>
+</svg>

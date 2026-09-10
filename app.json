@@ -1,17 +1,21 @@
 {
   "expo": {
-    "name": "pantry-chef",
+    "name": "PantryChef",
     "slug": "pantry-chef",
     "version": "1.0.0",
+    "scheme": "pantrychef",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pantrychef.app"
     },
     "android": {
+      "package": "com.pantrychef.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#fdfcf9",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -19,7 +23,51 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#fdfcf9"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PantryChef uses your photos to identify groceries.",
+          "cameraPermission": "PantryChef uses the camera to scan groceries."
+        }
+      ],
+      "expo-font",
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "color": "#4a6a3c"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "PantryChef uses the camera to scan groceries, dishes, receipts and barcodes."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "PantryChef uses your location to find supermarkets near you."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

@@ -13,7 +13,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { CATEGORY_META, categoryLabel } from '@/constants/categories';
 import { colors } from '@/constants/theme';
 import { categorize } from '@/lib/categorize';
-import { t } from '@/lib/i18n';
+import { t, unitLabel } from '@/lib/i18n';
 import { cn, normalizeName } from '@/lib/utils';
 import { AiError, hasApiKey } from '@/services/ai';
 import { recognizeReceipt } from '@/services/receipt';
@@ -101,7 +101,7 @@ function ManualForm({ onSaved, onScanBarcode }: { onSaved: () => void; onScanBar
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-2.5" contentContainerClassName="gap-2 pr-4">
         {UNITS.map((option) => (
-          <Chip key={option} label={option} selected={unit === option} onPress={() => setUnit(option)} />
+          <Chip key={option} label={unitLabel(option)} selected={unit === option} onPress={() => setUnit(option)} />
         ))}
       </ScrollView>
 
@@ -305,7 +305,7 @@ function PhotoCapture({ onSaved, kind }: { onSaved: () => void; kind: 'ingredien
                     <View className="ml-2 flex-1">
                       <Text className="text-base font-semibold text-ink-900">{item.name}</Text>
                       <Text className="text-xs text-ink-400">
-                        {item.quantity} {item.unit} · {t('addItem.sure', { percent: Math.round(item.confidence * 100) })}
+                        {item.quantity} {unitLabel(item.unit)} · {t('addItem.sure', { percent: Math.round(item.confidence * 100) })}
                       </Text>
                     </View>
                   </Pressable>

@@ -50,16 +50,22 @@ export default function RootLayout() {
     if (hydrated) SplashScreen.hideAsync().catch(() => {});
   }, [hydrated]);
 
+  // Direction actually in effect for this launch, and the value last written
+  // to the native flag (which only applies on the next launch).
+  const forcedRtl = useRef<boolean>(I18nManager.isRTL);
+
   useEffect(() => {
     if (!hydrated) return;
     const wantRtl = isRtlLocale(locale);
-    if (I18nManager.isRTL !== wantRtl) {
+    if (forcedRtl.current !== wantRtl) {
       I18nManager.allowRTL(wantRtl);
       I18nManager.forceRTL(wantRtl);
-      if (!rtlWarned.current) {
-        rtlWarned.current = true;
-        Alert.alert(t('settings.language'), t('settings.languageHint'));
-      }
+      forcedRtl.current = wantRtl;
+    }
+    // Tell the user once when the visible layout does not match the language.
+    if (I18nManager.isRTL !== wantRtl && !rtlWarned.current) {
+      rtlWarned.current = true;
+      Alert.alert(t('settings.language'), t('settings.languageHint'));
     }
   }, [hydrated, locale]);
 

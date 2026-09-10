@@ -3,6 +3,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 
 import { categorize } from '@/lib/categorize';
+import { VISION_NAMES } from '@/lib/content.i18n';
+import { currentLocale, languageName, t } from '@/lib/i18n';
 import { AiError, hasApiKey } from '@/services/ai';
 import type { NewInventoryItem, Unit } from '@/types';
 import { UNITS } from '@/types';
@@ -42,6 +44,7 @@ function hash(input: string): number {
 
 /** Deterministic pseudo-recognition so the same photo always yields the same list. */
 function simulateRecognition(imageUri: string): DetectedIngredient[] {
+  const names = VISION_NAMES[currentLocale()] ?? VISION_NAMES.en;
   const seed = hash(imageUri);
   const count = 4 + (seed % 3);
   const start = seed % SIMULATED_POOL.length;
@@ -54,7 +57,8 @@ function simulateRecognition(imageUri: string): DetectedIngredient[] {
     if (seen.has(index)) continue;
     seen.add(index);
     const base = SIMULATED_POOL[index];
-    picked.push({ ...base, category: categorize(base.name) });
+    const name = names[index] ?? base.name;
+    picked.push({ ...base, name, category: categorize(name) });
   }
   return picked;
 }
@@ -74,8 +78,9 @@ let client: Anthropic | null = null;
 
 async function recognizeWithClaude(base64: string, mimeType: string, signal?: AbortSignal): Promise<DetectedIngredient[]> {
   const apiKey = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY?.trim();
+  if (!hasApiKey()) throw new AiError(t('errors.noKey'), false);
   const model = process.env.EXPO_PUBLIC_CLAUDE_MODEL?.trim() || 'claude-opus-5';
-  if (!apiKey) throw new AiError('No API key configured.', false);
+  if (!apiKey) throw new AiError(t('errors.noKey'), false);
   if (!client) client = new Anthropic({ apiKey, timeout: 60_000, maxRetries: 2 });
 
   const mediaType = mimeType === 'image/png' ? 'image/png' : mimeType === 'image/webp' ? 'image/webp' : 'image/jpeg';
@@ -85,7 +90,7 @@ async function recognizeWithClaude(base64: string, mimeType: string, signal?: Ab
       model,
       max_tokens: 4000,
       system:
-        'You identify groceries in photos. List each distinct food item you can see with an estimated quantity, a unit from the allowed list, and a confidence between 0 and 1. Ignore non-food objects. If nothing edible is visible, return an empty list.',
+        `You identify groceries in photos. List each distinct food item you can see with an estimated quantity, a unit from the allowed list, and a confidence between 0 and 1. Ignore non-food objects. If nothing edible is visible, return an empty list. Write item names in ${languageName()}.`,
       output_config: { format: zodOutputFormat(DetectionOutput), effort: 'low' },
       messages: [
         {
@@ -101,7 +106,7 @@ async function recognizeWithClaude(base64: string, mimeType: string, signal?: Ab
   );
 
   const parsed = response.parsed_output;
-  if (!parsed) throw new AiError('Could not read the photo analysis. Please try again.');
+  if (!parsed) throw new AiError(t('errors.unreadable'));
 
   return parsed.items
     .filter((item) => item.name.trim())
@@ -138,12 +143,12 @@ export async function recognizeIngredients(
     } catch (error) {
       if (error instanceof AiError) throw error;
       if (error instanceof Anthropic.AuthenticationError) {
-        throw new AiError('The Claude API key was rejected.', false);
+        throw new AiError(t('errors.keyRejected'), false);
       }
       if (error instanceof Anthropic.APIConnectionError) {
-        throw new AiError('Could not reach the Claude API. Check your connection.');
+        throw new AiError(t('errors.offline'));
       }
-      throw new AiError('Photo analysis failed. Please try again.');
+      throw new AiError(t('errors.photoFailed'));
     }
   }
 
@@ -151,7 +156,7 @@ export async function recognizeIngredients(
     const timer = setTimeout(resolve, SIMULATION_DELAY_MS);
     options.signal?.addEventListener('abort', () => {
       clearTimeout(timer);
-      reject(new AiError('Photo analysis was cancelled.', false));
+      reject(new AiError(t('errors.cancelled'), false));
     });
   });
   return { items: simulateRecognition(photo.uri), simulated: true };

@@ -1,4 +1,8 @@
-import { t } from '@/lib/i18n';
+import { currentLocale, t } from '@/lib/i18n';
+
+function i18nLocaleTag(): string {
+  return { en: 'en-GB', fr: 'fr-FR', ar: 'ar-TN' }[currentLocale()] ?? 'en-GB';
+}
 
 /** Generates a short, collision-resistant id without native dependencies. */
 export function createId(): string {
@@ -35,7 +39,7 @@ export function formatRelativeDate(iso: string, now: Date = new Date()): string 
   if (hours < 24) return t('common.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
   if (days < 7) return t('common.daysAgo', { count: days });
-  return then.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return then.toLocaleDateString(i18nLocaleTag(), { month: 'short', day: 'numeric' });
 }
 
 /** 45 -> "45 min", 80 -> "1h 20m", 120 -> "2h" */

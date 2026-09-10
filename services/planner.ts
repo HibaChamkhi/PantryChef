@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 
+import { t } from '@/lib/i18n';
 import { AiError, RecipeOutput, describePantry, describePreferences, getClient, hasApiKey, toAiError, toRecipe } from '@/services/ai';
 import { markPantryMatches } from '@/services/dish';
 import { generateLocalWeek } from '@/services/localChef';
@@ -23,14 +24,14 @@ export async function generateWeeklyPlan(
   prefs: RecipePreferences,
   options: { signal?: AbortSignal } = {},
 ): Promise<WeeklyPlan> {
-  if (items.length === 0) throw new AiError('Add at least one ingredient to your pantry first.', false);
+  if (items.length === 0) throw new AiError(t('errors.emptyPantry'), false);
 
   if (!hasApiKey()) {
     await new Promise<void>((resolve, reject) => {
       const timer = setTimeout(resolve, LOCAL_DELAY_MS);
       options.signal?.addEventListener('abort', () => {
         clearTimeout(timer);
-        reject(new AiError('Planning was cancelled.', false));
+        reject(new AiError(t('errors.cancelled'), false));
       });
     });
     const recipes = generateLocalWeek(items, prefs);
@@ -53,13 +54,13 @@ export async function generateWeeklyPlan(
       },
       { signal: options.signal },
     );
-    if (response.stop_reason === 'refusal') throw new AiError('The chef declined this request.', false);
+    if (response.stop_reason === 'refusal') throw new AiError(t('errors.declined'), false);
     const parsed = response.parsed_output;
-    if (!parsed || parsed.dinners.length === 0) throw new AiError('The planner returned an unreadable answer. Please try again.');
+    if (!parsed || parsed.dinners.length === 0) throw new AiError(t('errors.unreadable'));
     const recipes = markPantryMatches(parsed.dinners.map(toRecipe).filter((recipe) => recipe.steps.length > 0), items).slice(0, 5);
     return { createdAt: new Date().toISOString(), days: recipes.map((recipe, weekday) => ({ weekday, recipe })) };
   } catch (error) {
     if (error instanceof Anthropic.APIError || error instanceof AiError) throw toAiError(error);
-    throw new AiError('Something went wrong while planning. Please try again.');
+    throw new AiError(t('errors.planFailed'));
   }
 }

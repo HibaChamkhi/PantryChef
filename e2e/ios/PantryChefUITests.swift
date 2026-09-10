@@ -226,8 +226,14 @@ final class PantryChefUITests: XCTestCase {
         tab("Pantry").tap()
         let row = text(containing: uniqueName)
         waitFor(row)
-        row.swipeLeft()
         let remove = app.buttons["Remove \(uniqueName)"].firstMatch
+        for _ in 0..<3 where !remove.exists {
+            // A slow drag opens the swipe action more reliably than a flick.
+            let start = row.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5))
+            let end = row.coordinate(withNormalizedOffset: CGVector(dx: -0.6, dy: 0.5))
+            start.press(forDuration: 0.1, thenDragTo: end)
+            _ = remove.waitForExistence(timeout: 3)
+        }
         waitFor(remove)
         remove.tap()
         XCTAssertTrue(row.waitForNonExistence(timeout: 5))
@@ -356,13 +362,23 @@ extension PantryChefUITests {
         app.buttons["Français"].tap()
         waitFor(tab("Garde-manger"), 20)
         waitFor(text(containing: "regime"), 20)
+        // Arabic: strings switch immediately; a notice explains that the
+        // right-to-left layout applies after relaunching the app.
+        app.buttons["العربية"].tap()
+        let notice = app.alerts.firstMatch
+        if notice.waitForExistence(timeout: 5) { notice.buttons.firstMatch.tap() }
+        waitFor(tab("المخزن"), 30)
         app.buttons["English"].tap()
-        waitFor(text(containing: "diet"), 20)
+        let notice2 = app.alerts.firstMatch
+        if notice2.waitForExistence(timeout: 5) { notice2.buttons.firstMatch.tap() }
+        waitFor(text(containing: "diet"), 30)
         app.buttons["Done"].firstMatch.tap()
         waitFor(app.staticTexts["Your pantry"])
 
         // Recipes respect the diet: no chicken in any title.
         app.buttons["Generate recipes"].tap()
+        sleep(4)
+        snap("diet-after-generate")
         waitFor(app.staticTexts["Three ideas for tonight"], 90)
         waitFor(text(containing: "Respecting: Vegetarian, Nuts"))
         XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'chicken thighs with'")).firstMatch.exists)

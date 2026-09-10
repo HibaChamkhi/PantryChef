@@ -3,6 +3,8 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 
 import { categorize } from '@/lib/categorize';
+import { RECEIPT_NAMES } from '@/lib/content.i18n';
+import { currentLocale, languageName, t } from '@/lib/i18n';
 import { AiError, getClient, hasApiKey, toAiError } from '@/services/ai';
 import type { DetectedIngredient, PhotoInput } from '@/services/vision';
 import { UNITS, type Unit } from '@/types';
@@ -66,7 +68,7 @@ const ReceiptOutput = z.object({
 });
 
 async function readWithClaude(photo: PhotoInput, signal?: AbortSignal): Promise<DetectedIngredient[]> {
-  if (!photo.base64) throw new AiError('The photo could not be read. Please try another one.', false);
+  if (!photo.base64) throw new AiError(t('errors.photoUnreadable'), false);
   const mediaType = photo.mimeType === 'image/png' ? 'image/png' : photo.mimeType === 'image/webp' ? 'image/webp' : 'image/jpeg';
 
   const response = await getClient().messages.parse(
@@ -74,7 +76,7 @@ async function readWithClaude(photo: PhotoInput, signal?: AbortSignal): Promise<
       model: MODEL,
       max_tokens: 6000,
       system:
-        'You read grocery receipts. Extract every food or drink line item as a clean ingredient name (no brand codes or abbreviations), an estimated quantity, a unit from the allowed list, and a confidence 0-1. Skip bags, deposits, discounts, totals, and non-food items. Return an empty list if the image is not a receipt.',
+        `You read grocery receipts. Extract every food or drink line item as a clean ingredient name (no brand codes or abbreviations), an estimated quantity, a unit from the allowed list, and a confidence 0-1. Skip bags, deposits, discounts, totals, and non-food items. Return an empty list if the image is not a receipt. Write item names in ${languageName()}.`,
       output_config: { format: zodOutputFormat(ReceiptOutput), effort: 'low' },
       messages: [
         {
@@ -90,7 +92,7 @@ async function readWithClaude(photo: PhotoInput, signal?: AbortSignal): Promise<
   );
 
   const parsed = response.parsed_output;
-  if (!parsed) throw new AiError('Could not read the receipt. Please try again.');
+  if (!parsed) throw new AiError(t('errors.unreadable'));
   return parsed.items
     .filter((item) => item.name.trim())
     .map((item) => ({
@@ -111,7 +113,7 @@ export async function recognizeReceipt(
       return { items: await readWithClaude(photo, options.signal), simulated: false };
     } catch (error) {
       if (error instanceof Anthropic.APIError || error instanceof AiError) throw toAiError(error);
-      throw new AiError('Receipt analysis failed. Please try again.');
+      throw new AiError(t('errors.receiptFailed'));
     }
   }
 
@@ -119,8 +121,14 @@ export async function recognizeReceipt(
     const timer = setTimeout(resolve, SIMULATION_DELAY_MS);
     options.signal?.addEventListener('abort', () => {
       clearTimeout(timer);
-      reject(new AiError('Receipt analysis was cancelled.', false));
+      reject(new AiError(t('errors.cancelled'), false));
     });
   });
-  return { items: SIMULATED_RECEIPTS[hash(photo.uri) % SIMULATED_RECEIPTS.length], simulated: true };
+  const index = hash(photo.uri) % SIMULATED_RECEIPTS.length;
+  const names = (RECEIPT_NAMES[currentLocale()] ?? RECEIPT_NAMES.en)[index];
+  const items = SIMULATED_RECEIPTS[index].map((item, position) => {
+    const name = names[position] ?? item.name;
+    return { ...item, name, category: categorize(name) };
+  });
+  return { items, simulated: true };
 }

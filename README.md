@@ -63,7 +63,9 @@ keep every screen working.
 **Planning and preferences**
 - Weekly plan of five dinners with a one-tap shopping list for the gaps.
 - Vegetarian, vegan, pescatarian, halal, kosher and gluten-free diets, plus allergens and a custom avoid list.
-- English, French and Arabic.
+- English, French and Arabic across the whole app: every screen and error message, the offline
+  chef's recipes, the simulated scans, unit labels and dates. Claude is asked to answer in the
+  chosen language, and Arabic switches the layout to right-to-left after a restart.
 
 ## Tech stack
 
@@ -94,7 +96,7 @@ recipes, dish photos, receipts and the weekly plan are produced by Claude. Witho
 one, the offline chef and simulated scans are used and the screens say so.
 
 Keys prefixed `EXPO_PUBLIC_` are bundled into the app. Use a backend proxy before
-shipping publicly.
+shipping publicly. A placeholder or malformed key is ignored and the offline chef is used.
 
 ## Tests
 

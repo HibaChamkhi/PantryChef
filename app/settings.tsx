@@ -167,11 +167,11 @@ export default function SettingsScreen() {
             <View className="mt-3 flex-row items-center justify-between">
               <Text className="text-sm text-ink-600">{t('settings.reminderTime')}</Text>
               <View className="flex-row items-center rounded-full bg-cream-100">
-                <Pressable accessibilityRole="button" accessibilityLabel="Earlier" onPress={() => setReminderHour(reminderHour - 1)} className="h-9 w-9 items-center justify-center rounded-full active:bg-cream-200">
+                <Pressable accessibilityRole="button" accessibilityLabel={t('misc.earlier')} onPress={() => setReminderHour(reminderHour - 1)} className="h-9 w-9 items-center justify-center rounded-full active:bg-cream-200">
                   <Ionicons name="remove" size={18} color={colors.sage700} />
                 </Pressable>
                 <Text className="min-w-[64px] text-center text-sm font-semibold text-ink-900">{`${reminderHour.toString().padStart(2, '0')}:00`}</Text>
-                <Pressable accessibilityRole="button" accessibilityLabel="Later" onPress={() => setReminderHour(reminderHour + 1)} className="h-9 w-9 items-center justify-center rounded-full active:bg-cream-200">
+                <Pressable accessibilityRole="button" accessibilityLabel={t('misc.later')} onPress={() => setReminderHour(reminderHour + 1)} className="h-9 w-9 items-center justify-center rounded-full active:bg-cream-200">
                   <Ionicons name="add" size={18} color={colors.sage700} />
                 </Pressable>
               </View>

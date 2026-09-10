@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Screen } from '@/components/ui/Screen';
 import { colors } from '@/constants/theme';
-import { t } from '@/lib/i18n';
+import { t, unitLabel } from '@/lib/i18n';
 import { scaleAmount } from '@/lib/scale';
 import { formatDuration } from '@/lib/utils';
 import { matchPantryItems } from '@/services/dish';
@@ -231,7 +231,7 @@ export default function RecipeDetailScreen() {
                   <Pressable key={item.id} accessibilityRole="checkbox" accessibilityState={{ checked }} accessibilityLabel={item.name} onPress={() => toggleUsed(item.id)} className="flex-row items-center rounded-xl2 bg-cream-100 px-3 py-2.5">
                     <Ionicons name={checked ? 'checkmark-circle' : 'ellipse-outline'} size={22} color={checked ? colors.sage600 : colors.ink400} />
                     <Text className="ml-2.5 flex-1 text-base text-ink-900">{item.name}</Text>
-                    <Text className="text-xs text-ink-400">{item.quantity} {item.unit}</Text>
+                    <Text className="text-xs text-ink-400">{item.quantity} {unitLabel(item.unit)}</Text>
                   </Pressable>
                 );
               })}

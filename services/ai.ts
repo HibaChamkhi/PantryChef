@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 
+import { languageName, t } from '@/lib/i18n';
 import { createId } from '@/lib/utils';
 import { DEFAULT_PREFERENCES, generateLocalRecipes } from '@/services/localChef';
 import type { InventoryItem, Recipe, RecipePreferences } from '@/types';
@@ -15,7 +16,9 @@ import type { InventoryItem, Recipe, RecipePreferences } from '@/types';
  * and development; for a public release, route requests through your own
  * backend that holds the key.
  */
-const API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY?.trim() || undefined;
+const RAW_API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY?.trim() || '';
+/** Only accept keys that look real; placeholders such as "sk-ant-PASTE-YOUR-KEY" fall back to the offline chef. */
+const API_KEY = /^sk-ant-[A-Za-z0-9_-]{30,}$/.test(RAW_API_KEY) && !/PASTE|YOUR[-_]KEY|XXXX/i.test(RAW_API_KEY) ? RAW_API_KEY : undefined;
 const MODEL = process.env.EXPO_PUBLIC_CLAUDE_MODEL?.trim() || 'claude-opus-5';
 const REQUEST_TIMEOUT_MS = 90_000;
 const LOCAL_CHEF_DELAY_MS = 1200;
@@ -44,7 +47,7 @@ let client: Anthropic | null = null;
 
 export function getClient(): Anthropic {
   if (!API_KEY) {
-    throw new AiError('No API key configured.', false);
+    throw new AiError(t('errors.noKey'), false);
   }
   if (!client) {
     client = new Anthropic({ apiKey: API_KEY, timeout: REQUEST_TIMEOUT_MS, maxRetries: 2 });
@@ -159,31 +162,32 @@ export function describePreferences(prefs: RecipePreferences): string {
   if (prefs.avoid.length > 0) lines.push(`Never use these ingredients or anything containing them: ${prefs.avoid.join(', ')}.`);
   if (prefs.cuisine !== 'any') lines.push(`Preferred cuisine: ${prefs.cuisine}.`);
   if (prefs.maxMinutes) lines.push(`Each recipe must take at most ${prefs.maxMinutes} minutes of prep plus cooking.`);
-  return lines.length > 0 ? `Constraints:
-${lines.map((line) => `- ${line}`).join('\n')}` : 'No dietary constraints.';
+  const language = `Write every user-facing string (titles, descriptions, ingredient names, amounts, steps) in ${languageName()}.`;
+  const constraints = lines.length > 0 ? `Constraints:\n${lines.map((line) => `- ${line}`).join('\n')}` : 'No dietary constraints.';
+  return `${language}\n${constraints}`;
 }
 
 export function toAiError(error: unknown): AiError {
   if (error instanceof AiError) return error;
   if (error instanceof Anthropic.AuthenticationError) {
-    return new AiError('The Claude API key was rejected. Check EXPO_PUBLIC_ANTHROPIC_API_KEY.', false);
+    return new AiError(t('errors.keyRejected'), false);
   }
   if (error instanceof Anthropic.RateLimitError) {
-    return new AiError('The chef is busy right now. Please try again in a minute.');
+    return new AiError(t('errors.busy'));
   }
   if (error instanceof Anthropic.BadRequestError) {
-    return new AiError(`The request was rejected: ${error.message}`, false);
+    return new AiError(t('errors.badRequest', { message: error.message }), false);
   }
   if (error instanceof Anthropic.APIConnectionError) {
-    return new AiError('Could not reach the Claude API. Check your connection and try again.');
+    return new AiError(t('errors.offline'));
   }
   if (error instanceof Anthropic.APIError) {
-    return new AiError(`The Claude API returned an error (${error.status ?? 'unknown'}). Please try again.`);
+    return new AiError(t('errors.apiError', { status: String(error.status ?? '?') }));
   }
   if (error instanceof Error && error.name === 'AbortError') {
-    return new AiError('Recipe generation was cancelled.', false);
+    return new AiError(t('errors.cancelled'), false);
   }
-  return new AiError('Something went wrong while generating recipes. Please try again.');
+  return new AiError(t('errors.generic'));
 }
 
 function sleep(ms: number, signal?: AbortSignal): Promise<void> {
@@ -191,7 +195,7 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
     const timer = setTimeout(resolve, ms);
     signal?.addEventListener('abort', () => {
       clearTimeout(timer);
-      reject(new AiError('Recipe generation was cancelled.', false));
+      reject(new AiError(t('errors.cancelled'), false));
     });
   });
 }
@@ -206,7 +210,7 @@ export async function generateRecipes(
 ): Promise<Recipe[]> {
   const prefs = options.preferences ?? DEFAULT_PREFERENCES;
   if (items.length === 0) {
-    throw new AiError('Add at least one ingredient to your pantry first.', false);
+    throw new AiError(t('errors.emptyPantry'), false);
   }
 
   if (!hasApiKey()) {
@@ -235,20 +239,20 @@ export async function generateRecipes(
     );
 
     if (response.stop_reason === 'refusal') {
-      throw new AiError('The chef declined this request. Try adjusting your pantry list.', false);
+      throw new AiError(t('errors.declined'), false);
     }
     if (response.stop_reason === 'max_tokens') {
-      throw new AiError('The recipes came back incomplete. Please try again.');
+      throw new AiError(t('errors.incomplete'));
     }
 
     const parsed = response.parsed_output;
     if (!parsed || parsed.recipes.length === 0) {
-      throw new AiError('The chef returned an unreadable answer. Please try again.');
+      throw new AiError(t('errors.unreadable'));
     }
 
     const recipes = parsed.recipes.map(toRecipe).filter((recipe) => recipe.steps.length > 0);
     if (recipes.length === 0) {
-      throw new AiError('The chef returned recipes without steps. Please try again.');
+      throw new AiError(t('errors.noSteps'));
     }
     return recipes.slice(0, 3);
   } catch (error) {

@@ -1,10 +1,13 @@
+import { CHEF, fill, type ChefStrings } from '@/lib/content.i18n';
+import { currentLocale, unitLabel } from '@/lib/i18n';
 import { createId } from '@/lib/utils';
 import type { Cuisine, InventoryItem, Recipe, RecipeIngredient, RecipePreferences, RecipeStep } from '@/types';
 
 /**
  * Offline recipe generator used when no Claude API key is configured.
- * Deterministic for a given pantry and preferences; always returns three
- * recipes so the app remains usable (and testable) without network access.
+ * Deterministic for a given pantry and preferences, localised through
+ * lib/content.i18n, and always returns three recipes so the app remains
+ * usable (and testable) without network access.
  */
 
 interface PantryShape {
@@ -19,27 +22,35 @@ interface PantryShape {
 
 export const DEFAULT_PREFERENCES: RecipePreferences = { diet: 'none', avoid: [], cuisine: 'any', maxMinutes: null };
 
-const FRUIT = /lemon|lime|orange|apple|banana|berr|grape|mango|pear|peach|melon|pineapple|kiwi|plum|cherry/i;
+const FRUIT = /lemon|lime|orange|apple|banana|berr|grape|mango|pear|peach|melon|pineapple|kiwi|plum|cherry|citron|pomme|banane|fraise|raisin|mangue|poire|pêche|ليمون|برتقال|تفاح|موز|فراولة|عنب|مانجو|كمثرى|خوخ|بطيخ/i;
 
-/** Keywords that make an ingredient unsuitable for a diet or allergy. */
+/** Keywords (English, French, Arabic) that make an ingredient unsuitable for a diet or allergy. */
+const MEAT = 'chicken|beef|pork|turkey|lamb|bacon|sausage|ham|steak|mince|duck|salami|chorizo|poulet|bœuf|boeuf|porc|dinde|agneau|lardon|saucisse|jambon|viande|merguez|canard|دجاج|لحم|بقر|ضأن|خروف|ديك|سجق|مرقاز|بط';
+const FISH = 'salmon|tuna|shrimp|prawn|cod|fish|crab|mussel|clam|squid|anchov|sardine|tilapia|saumon|thon|crevette|cabillaud|poisson|crabe|moule|calamar|anchois|سلمون|تونة|روبيان|جمبري|قريدس|سمك|سردين|حبار|سلطعون|أنشوجة';
+const DAIRY = 'milk|cheese|yogurt|yoghurt|butter|cream|parmesan|mozzarella|feta|ricotta|cheddar|kefir|lait|fromage|yaourt|beurre|crème|creme|حليب|جبن|زبادي|لبن|زبدة|كريمة|قشطة';
+const EGG = 'egg|œuf|oeuf|بيض';
+const PORK = 'pork|bacon|ham|salami|chorizo|lard|porc|lardon|jambon|لحم خنزير|خنزير';
+const SHELLFISH = 'shrimp|prawn|crab|mussel|clam|squid|lobster|oyster|crevette|crabe|moule|calamar|homard|huître|روبيان|جمبري|قريدس|سلطعون|حبار|بلح البحر|محار';
+const GLUTEN = 'wheat|flour|bread|pasta|spaghetti|penne|noodle|couscous|bulgur|barley|tortilla|bagel|soy sauce|beer|seitan|blé|farine|pain|pâtes|pates|nouille|semoule|orge|boulgour|sauce soja|bière|قمح|طحين|دقيق|خبز|معكرونة|مكرونة|نودلز|كسكسي|كسكس|برغل|شعير|صلصة صويا|سميد';
+
 const DIET_BLOCK: Record<string, RegExp | null> = {
   none: null,
-  vegetarian: /chicken|beef|pork|turkey|lamb|bacon|sausage|ham|steak|mince|duck|salami|chorizo|salmon|tuna|shrimp|prawn|cod|fish|crab|mussel|clam|squid|anchov|sardine|tilapia|gelatin/i,
-  vegan: /chicken|beef|pork|turkey|lamb|bacon|sausage|ham|steak|mince|duck|salami|chorizo|salmon|tuna|shrimp|prawn|cod|fish|crab|mussel|clam|squid|anchov|sardine|tilapia|egg|milk|cheese|yogurt|yoghurt|butter|cream|honey|parmesan|mozzarella|feta|ricotta|cheddar|gelatin/i,
-  pescatarian: /chicken|beef|pork|turkey|lamb|bacon|sausage|ham|steak|mince|duck|salami|chorizo/i,
-  halal: /pork|bacon|ham|salami|chorizo|lard|wine|beer|gelatin/i,
-  kosher: /pork|bacon|ham|salami|chorizo|shrimp|prawn|crab|mussel|clam|squid|lobster|oyster/i,
-  glutenFree: /wheat|flour|bread|pasta|spaghetti|penne|noodle|couscous|bulgur|barley|tortilla|bagel|soy sauce|beer|seitan/i,
+  vegetarian: new RegExp(`${MEAT}|${FISH}|gelatin|gélatine|جيلاتين`, 'i'),
+  vegan: new RegExp(`${MEAT}|${FISH}|${DAIRY}|${EGG}|honey|miel|عسل|gelatin|gélatine|جيلاتين`, 'i'),
+  pescatarian: new RegExp(MEAT, 'i'),
+  halal: new RegExp(`${PORK}|wine|beer|vin|bière|نبيذ|بيرة|gelatin|gélatine|جيلاتين`, 'i'),
+  kosher: new RegExp(`${PORK}|${SHELLFISH}`, 'i'),
+  glutenFree: new RegExp(GLUTEN, 'i'),
 };
 
 const ALLERGEN_BLOCK: Record<string, RegExp> = {
-  nuts: /nut|almond|walnut|cashew|pistachio|pecan|hazelnut|peanut/i,
-  dairy: /milk|cheese|yogurt|yoghurt|butter|cream|parmesan|mozzarella|feta|ricotta|cheddar|kefir/i,
-  gluten: /wheat|flour|bread|pasta|spaghetti|penne|noodle|couscous|bulgur|barley|tortilla|bagel|soy sauce/i,
-  eggs: /egg/i,
-  shellfish: /shrimp|prawn|crab|mussel|clam|squid|lobster|oyster/i,
-  soy: /soy|tofu|edamame|miso|tempeh/i,
-  sesame: /sesame|tahini/i,
+  nuts: /nut|almond|walnut|cashew|pistachio|pecan|hazelnut|peanut|noix|amande|cajou|pistache|noisette|cacahu|مكسرات|لوز|جوز|كاجو|فستق|بندق|فول سوداني/i,
+  dairy: new RegExp(DAIRY, 'i'),
+  gluten: new RegExp(GLUTEN, 'i'),
+  eggs: new RegExp(EGG, 'i'),
+  shellfish: new RegExp(SHELLFISH, 'i'),
+  soy: /soy|tofu|edamame|miso|tempeh|soja|صويا|توفو|ميسو/i,
+  sesame: /sesame|tahini|sésame|sesame|سمسم|طحينة/i,
 };
 
 export function isBlocked(name: string, prefs: RecipePreferences): boolean {
@@ -52,16 +63,9 @@ export function isBlocked(name: string, prefs: RecipePreferences): boolean {
   return false;
 }
 
-const CUISINE_TWIST: Record<Cuisine, { label: string; spice: string; finish: string; emoji?: string } | null> = {
-  any: null,
-  italian: { label: 'Italian', spice: 'oregano and a pinch of chilli', finish: 'a handful of torn basil and grated parmesan' },
-  mediterranean: { label: 'Mediterranean', spice: 'oregano and lemon zest', finish: 'olives, lemon juice, and a drizzle of good olive oil' },
-  asian: { label: 'Asian', spice: 'ginger and a splash of soy sauce', finish: 'sliced spring onion and a few drops of sesame oil' },
-  mexican: { label: 'Mexican', spice: 'cumin and smoked chilli', finish: 'lime juice and chopped coriander' },
-  indian: { label: 'Indian', spice: 'garam masala and turmeric', finish: 'a spoon of yogurt and fresh coriander' },
-  middleEastern: { label: 'Middle Eastern', spice: 'cumin and sumac', finish: 'chopped parsley, mint, and a squeeze of lemon' },
-  french: { label: 'French', spice: 'thyme and a bay leaf', finish: 'a knob of butter and chopped parsley' },
-};
+function strings(): ChefStrings {
+  return CHEF[currentLocale()] ?? CHEF.en;
+}
 
 function shape(items: InventoryItem[], prefs: RecipePreferences): PantryShape {
   const usable = items.filter((item) => !isBlocked(item.name, prefs));
@@ -78,11 +82,12 @@ function shape(items: InventoryItem[], prefs: RecipePreferences): PantryShape {
 }
 
 function pantryIngredient(item: InventoryItem, amount?: string): RecipeIngredient {
-  return { name: item.name, amount: amount ?? `${item.quantity} ${item.unit}`, inPantry: true };
+  return { name: item.name, amount: amount ?? `${item.quantity} ${unitLabel(item.unit)}`, inPantry: true };
 }
 
 function staple(name: string, amount: string, items: InventoryItem[]): RecipeIngredient {
-  const inPantry = items.some((item) => item.name.toLowerCase().includes(name.toLowerCase()));
+  const needle = name.toLowerCase();
+  const inPantry = items.some((item) => item.name.toLowerCase().includes(needle) || needle.includes(item.name.toLowerCase()));
   return { name, amount, inPantry };
 }
 
@@ -98,31 +103,33 @@ function lower(item: InventoryItem | undefined, fallback: string): string {
   return item ? item.name.toLowerCase() : fallback;
 }
 
-function joinNames(items: InventoryItem[], fallback: string): string {
+function joinNames(items: InventoryItem[], fallback: string, and: string): string {
   if (items.length === 0) return fallback;
   const names = items.map((item) => item.name.toLowerCase());
-  return names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')}${and}${names[names.length - 1]}`;
 }
 
 type Draft = Omit<Recipe, 'id' | 'createdAt'>;
 
-function plantProtein(prefs: RecipePreferences): RecipeIngredient {
-  const options = ['Chickpeas', 'Lentils', 'Tofu', 'White beans'];
-  const pick = options.find((option) => !isBlocked(option, prefs)) ?? 'Mushrooms';
-  return { name: pick, amount: '1 can', inPantry: false };
+function plantProtein(prefs: RecipePreferences, s: ChefStrings): RecipeIngredient {
+  const options = [s.ing.chickpeas, s.ing.lentils, s.ing.tofu, s.ing.whiteBeans];
+  const pick = options.find((option) => !isBlocked(option, prefs)) ?? s.ing.mushrooms;
+  return { name: pick, amount: s.amount.can1, inPantry: false };
 }
 
-function skillet(p: PantryShape, prefs: RecipePreferences): Draft {
+function skillet(p: PantryShape, prefs: RecipePreferences, s: ChefStrings): Draft {
   const protein = p.proteins[0];
   const veg = p.vegetables.slice(0, 2);
   const spice = p.spices[0];
-  const proteinIngredient = protein ? pantryIngredient(protein, '2 servings') : plantProtein(prefs);
-  const proteinName = proteinIngredient.name.toLowerCase();
-  const vegNames = joinNames(veg, 'whatever vegetables you have');
-
+  const proteinIngredient = protein ? pantryIngredient(protein, s.amount.servings2) : plantProtein(prefs, s);
+  const vars = {
+    protein: proteinIngredient.name.toLowerCase(),
+    veg: joinNames(veg, s.fallback.veg, s.and),
+    spice: spice ? `${s.and}${spice.name.toLowerCase()}` : '',
+  };
   return {
-    title: `One-pan ${proteinName} with ${vegNames}`,
-    description: `A weeknight skillet that browns the ${proteinName} first, then finishes the vegetables in the same pan so nothing goes to waste.`,
+    title: fill(s.skillet.title, vars),
+    description: fill(s.skillet.description, vars),
     emoji: '🍳',
     prepMinutes: 10,
     cookMinutes: 20,
@@ -131,90 +138,75 @@ function skillet(p: PantryShape, prefs: RecipePreferences): Draft {
     ingredients: [
       proteinIngredient,
       ...veg.map((item) => pantryIngredient(item)),
-      spice ? pantryIngredient(spice, '1 tsp') : staple('Salt and pepper', 'to taste', p.all),
-      staple('Olive oil', '2 tbsp', p.all),
-      staple('Garlic', '2 cloves', p.all),
+      spice ? pantryIngredient(spice, s.amount.tsp1) : staple(s.ing.saltPepper, s.amount.toTaste, p.all),
+      staple(s.ing.oliveOil, s.amount.tbsp2, p.all),
+      staple(s.ing.garlic, s.amount.cloves2, p.all),
     ],
-    steps: steps([
-      [`Pat the ${proteinName} dry and season generously with salt${spice ? ` and ${spice.name.toLowerCase()}` : ''}.`],
-      ['Heat the olive oil in a large pan over medium-high heat until it shimmers.'],
-      [`Sear the ${proteinName} without moving it so it browns properly.`, 6],
-      [`Flip, add the garlic and ${vegNames}, and cook until the vegetables are just tender.`, 8],
-      ['Reduce the heat, cover, and let everything finish cooking through.', 5],
-      ['Taste, adjust the seasoning, and serve straight from the pan.'],
-    ]),
+    steps: steps(s.skillet.steps.map((step, index) => [fill(step, vars), [0, 0, 6, 8, 5, 0][index] || undefined])),
   };
 }
 
-function grainBowl(p: PantryShape, prefs: RecipePreferences): Draft {
+function grainBowl(p: PantryShape, prefs: RecipePreferences, s: ChefStrings): Draft {
   const base = p.bases[0];
   const veg = p.vegetables.slice(0, 3);
-  const dairy = p.dairy.find((item) => /yog|feta|cheese|ricotta/i.test(item.name));
-  const baseFallback = isBlocked('rice', prefs) ? 'quinoa' : 'rice';
-  const baseName = lower(base, baseFallback);
-  const vegNames = joinNames(veg, 'crunchy vegetables');
-
+  const dairy = p.dairy.find((item) => /yog|feta|cheese|ricotta|fromage|yaourt|زبادي|جبن|لبن/i.test(item.name));
+  const baseFallbackName = isBlocked(s.ing.rice, prefs) ? s.ing.quinoa : s.ing.rice;
+  const vars = {
+    base: base ? base.name : baseFallbackName,
+    baseLower: lower(base, isBlocked(s.ing.rice, prefs) ? s.fallback.quinoa : s.fallback.rice),
+    veg: joinNames(veg, s.fallback.crunchy, s.and),
+    dairy: dairy ? fill(s.bowl.withDairy, { dairy: dairy.name.toLowerCase() }) : '',
+    dairyStep: dairy ? fill(s.bowl.withDairy, { dairy: dairy.name.toLowerCase() }) : '',
+  };
   return {
-    title: `${base ? base.name : baseFallback.charAt(0).toUpperCase() + baseFallback.slice(1)} bowl with ${vegNames}`,
-    description: `Fluffy ${baseName} topped with ${vegNames}${dairy ? ` and a spoon of ${dairy.name.toLowerCase()}` : ''}, finished with a bright lemony dressing.`,
+    title: fill(s.bowl.title, vars),
+    description: fill(s.bowl.description, { ...vars, base: vars.baseLower }),
     emoji: '🥗',
     prepMinutes: 10,
     cookMinutes: 18,
     servings: 2,
     difficulty: 'easy',
     ingredients: [
-      base ? pantryIngredient(base, '1 cup') : { name: baseFallback.charAt(0).toUpperCase() + baseFallback.slice(1), amount: '1 cup', inPantry: false },
+      base ? pantryIngredient(base, s.amount.cup1) : { name: baseFallbackName, amount: s.amount.cup1, inPantry: false },
       ...veg.map((item) => pantryIngredient(item)),
-      ...(dairy ? [pantryIngredient(dairy, '3 tbsp')] : []),
-      staple('Lemon', '1', p.all),
-      staple('Olive oil', '2 tbsp', p.all),
-      staple('Salt', 'to taste', p.all),
+      ...(dairy ? [pantryIngredient(dairy, s.amount.tbsp3)] : []),
+      staple(s.ing.lemon, s.amount.one, p.all),
+      staple(s.ing.oliveOil, s.amount.tbsp2, p.all),
+      staple(s.ing.salt, s.amount.toTaste, p.all),
     ],
-    steps: steps([
-      [`Rinse the ${baseName} and cook it according to the package instructions.`, 15],
-      [`While it cooks, chop the ${vegNames} into bite-sized pieces.`],
-      ['Whisk the lemon juice with olive oil and a pinch of salt to make a dressing.'],
-      [`Fluff the ${baseName} and divide it between two bowls.`],
-      [`Pile the vegetables on top${dairy ? `, add the ${dairy.name.toLowerCase()}` : ''}, and drizzle with the dressing.`],
-    ]),
+    steps: steps(s.bowl.steps.map((step, index) => [fill(step, { ...vars, base: vars.baseLower }), [15, 0, 0, 0, 0][index] || undefined])),
   };
 }
 
-function soupOrFrittata(p: PantryShape, prefs: RecipePreferences): Draft {
-  const eggs = p.dairy.find((item) => /egg/i.test(item.name));
+function soupOrFrittata(p: PantryShape, prefs: RecipePreferences, s: ChefStrings): Draft {
+  const eggs = p.dairy.find((item) => /egg|œuf|oeuf|بيض/i.test(item.name));
   const veg = p.vegetables.slice(0, 3);
-  const vegNames = joinNames(veg, 'leftover vegetables');
 
   if (eggs && !isBlocked('eggs', prefs)) {
+    const vars = { veg: joinNames(veg, s.fallback.leftover, s.and) };
     return {
-      title: `Everything frittata with ${vegNames}`,
-      description: `The best way to clear the fridge: eggs bind ${vegNames} into a golden frittata you can eat warm or cold.`,
+      title: fill(s.frittata.title, vars),
+      description: fill(s.frittata.description, vars),
       emoji: '🥚',
       prepMinutes: 8,
       cookMinutes: 17,
       servings: 3,
       difficulty: 'easy',
       ingredients: [
-        pantryIngredient(eggs, '6'),
+        pantryIngredient(eggs, s.amount.six),
         ...veg.map((item) => pantryIngredient(item)),
-        isBlocked('milk', prefs) ? staple('Water', '3 tbsp', p.all) : staple('Milk', '3 tbsp', p.all),
-        isBlocked('butter', prefs) ? staple('Olive oil', '1 tbsp', p.all) : staple('Butter', '1 tbsp', p.all),
-        staple('Salt and pepper', 'to taste', p.all),
+        isBlocked(s.ing.milk, prefs) ? staple(s.ing.water, s.amount.tbsp3, p.all) : staple(s.ing.milk, s.amount.tbsp3, p.all),
+        isBlocked(s.ing.butter, prefs) ? staple(s.ing.oliveOil, s.amount.tbsp1, p.all) : staple(s.ing.butter, s.amount.tbsp1, p.all),
+        staple(s.ing.saltPepper, s.amount.toTaste, p.all),
       ],
-      steps: steps([
-        ['Preheat the grill or oven to 200°C (390°F).'],
-        ['Whisk the eggs with the liquid, salt, and pepper.'],
-        [`Warm the fat in an ovenproof pan and soften the ${vegNames}.`, 5],
-        ['Pour in the eggs and cook gently until the edges set.', 6],
-        ['Transfer to the oven until the top is puffed and golden.', 6],
-        ['Rest for a minute, then slice into wedges.'],
-      ]),
+      steps: steps(s.frittata.steps.map((step, index) => [fill(step, vars), [0, 0, 5, 6, 6, 0][index] || undefined])),
     };
   }
 
+  const vars = { veg: joinNames(veg, s.fallback.leftover, s.and) };
   return {
-    title: `Rustic ${vegNames} soup`,
-    description: `A forgiving, chunky soup that turns ${vegNames} into a comforting bowl with a handful of pantry staples.`,
+    title: fill(s.soup.title, vars),
+    description: fill(s.soup.description, vars),
     emoji: '🍲',
     prepMinutes: 10,
     cookMinutes: 30,
@@ -222,48 +214,42 @@ function soupOrFrittata(p: PantryShape, prefs: RecipePreferences): Draft {
     difficulty: 'easy',
     ingredients: [
       ...veg.map((item) => pantryIngredient(item)),
-      staple('Onion', '1', p.all),
-      staple('Vegetable stock', '1 l', p.all),
-      staple('Olive oil', '1 tbsp', p.all),
-      p.spices[0] ? pantryIngredient(p.spices[0], '1 tsp') : staple('Dried herbs', '1 tsp', p.all),
+      staple(s.ing.onion, s.amount.one, p.all),
+      staple(s.ing.stock, s.amount.l1, p.all),
+      staple(s.ing.oliveOil, s.amount.tbsp1, p.all),
+      p.spices[0] ? pantryIngredient(p.spices[0], s.amount.tsp1) : staple(s.ing.driedHerbs, s.amount.tsp1, p.all),
     ],
-    steps: steps([
-      ['Dice the onion and chop the vegetables into even chunks.'],
-      ['Soften the onion in olive oil over medium heat.', 5],
-      [`Add the ${vegNames} and herbs and stir for a minute.`],
-      ['Pour in the stock, bring to a simmer, and cook until everything is tender.', 20],
-      ['Blend half the soup for body, or leave it chunky. Season and serve.'],
-    ]),
+    steps: steps(s.soup.steps.map((step, index) => [fill(step, vars), [0, 5, 0, 20, 0][index] || undefined])),
   };
 }
 
-/** Applies a cuisine flavour profile to a draft: title prefix, spice step, finishing step. */
-function applyCuisine(draft: Draft, cuisine: Cuisine): Draft {
-  const twist = CUISINE_TWIST[cuisine];
-  if (!twist) return draft;
+/** Applies a cuisine flavour profile: title, spice step, finishing step. */
+function applyCuisine(draft: Draft, cuisine: Cuisine, s: ChefStrings): Draft {
+  if (cuisine === 'any') return draft;
+  const twist = s.cuisines[cuisine];
   const lastOrder = draft.steps.length;
   return {
     ...draft,
-    title: `${twist.label} ${draft.title.charAt(0).toLowerCase()}${draft.title.slice(1)}`,
-    description: `${draft.description} Seasoned with ${twist.spice}.`,
+    title: fill(s.cuisinePrefix, { label: twist.label, title: draft.title }),
+    description: fill(s.cuisineDescription, { description: draft.description, spice: twist.spice }),
     steps: [
       ...draft.steps.map((step, index) =>
-        index === 0 ? { ...step, instruction: `${step.instruction} Add ${twist.spice}.` } : step,
+        index === 0 ? { ...step, instruction: fill(s.cuisineFirstStep, { step: step.instruction, spice: twist.spice }) } : step,
       ),
-      { order: lastOrder + 1, instruction: `Finish with ${twist.finish}.` },
+      { order: lastOrder + 1, instruction: fill(s.cuisineFinish, { finish: twist.finish }) },
     ],
   };
 }
 
 /** Compresses cook times so prep + cook fits under the limit. */
-function applyTimeCap(draft: Draft, maxMinutes: number | null): Draft {
+function applyTimeCap(draft: Draft, maxMinutes: number | null, s: ChefStrings): Draft {
   if (!maxMinutes) return draft;
   const total = draft.prepMinutes + draft.cookMinutes;
   if (total <= maxMinutes) return draft;
   const factor = Math.max(0.4, (maxMinutes - draft.prepMinutes) / draft.cookMinutes);
   return {
     ...draft,
-    title: `Quick ${draft.title.charAt(0).toLowerCase()}${draft.title.slice(1)}`,
+    title: fill(s.quick, { title: draft.title }),
     cookMinutes: Math.max(5, Math.round(draft.cookMinutes * factor)),
     steps: draft.steps.map((step) =>
       step.durationMinutes ? { ...step, durationMinutes: Math.max(1, Math.round(step.durationMinutes * factor)) } : step,
@@ -271,10 +257,11 @@ function applyTimeCap(draft: Draft, maxMinutes: number | null): Draft {
   };
 }
 
-function finalize(draft: Draft, prefs: RecipePreferences): Recipe {
-  const shaped = applyTimeCap(applyCuisine(draft, prefs.cuisine), prefs.maxMinutes);
+function finalize(draft: Draft, prefs: RecipePreferences, s: ChefStrings): Recipe {
+  const shaped = applyTimeCap(applyCuisine(draft, prefs.cuisine, s), prefs.maxMinutes, s);
   return {
     ...shaped,
+    title: shaped.title.charAt(0).toUpperCase() + shaped.title.slice(1),
     ingredients: shaped.ingredients.filter((ingredient) => !isBlocked(ingredient.name, prefs)),
     id: createId(),
     createdAt: new Date().toISOString(),
@@ -282,17 +269,19 @@ function finalize(draft: Draft, prefs: RecipePreferences): Recipe {
 }
 
 export function generateLocalRecipes(items: InventoryItem[], prefs: RecipePreferences = DEFAULT_PREFERENCES): Recipe[] {
+  const s = strings();
   const p = shape(items, prefs);
-  return [skillet(p, prefs), grainBowl(p, prefs), soupOrFrittata(p, prefs)].map((draft) => finalize(draft, prefs));
+  return [skillet(p, prefs, s), grainBowl(p, prefs, s), soupOrFrittata(p, prefs, s)].map((draft) => finalize(draft, prefs, s));
 }
 
 /** Five varied dinners for a weekly plan, rotating cuisines when none is chosen. */
 export function generateLocalWeek(items: InventoryItem[], prefs: RecipePreferences = DEFAULT_PREFERENCES): Recipe[] {
+  const s = strings();
   const p = shape(items, prefs);
   const rotation: Cuisine[] = prefs.cuisine === 'any' ? ['any', 'italian', 'asian', 'mediterranean', 'mexican'] : [prefs.cuisine];
   const builders = [skillet, grainBowl, soupOrFrittata, skillet, grainBowl];
   return builders.map((build, index) => {
     const cuisine = rotation[index % rotation.length];
-    return finalize(build(p, prefs), { ...prefs, cuisine });
+    return finalize(build(p, prefs, s), { ...prefs, cuisine }, s);
   });
 }

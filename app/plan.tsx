@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Screen } from '@/components/ui/Screen';
 import { colors } from '@/constants/theme';
-import { dayName, t } from '@/lib/i18n';
+import { currentLocale, dayName, t } from '@/lib/i18n';
 import { cancelWeeklyPlan, runWeeklyPlan } from '@/services/generation';
 import { useInventoryStore } from '@/store/useInventoryStore';
 import { useRecipeStore } from '@/store/useRecipeStore';
@@ -56,7 +56,7 @@ export default function PlanScreen() {
 
   const openRecipe = useCallback((recipe: Recipe) => router.push(`/recipes/${recipe.id}`), [router]);
 
-  const plannedDate = plan ? new Date(plan.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+  const plannedDate = plan ? new Date(plan.createdAt).toLocaleDateString({ en: 'en-GB', fr: 'fr-FR', ar: 'ar-TN' }[currentLocale()], { month: 'short', day: 'numeric' }) : '';
 
   return (
     <Screen edges={[]}>

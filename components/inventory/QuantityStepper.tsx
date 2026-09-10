@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 import { colors } from '@/constants/theme';
-import { t } from '@/lib/i18n';
+import { t, unitLabel } from '@/lib/i18n';
 import type { Unit } from '@/types';
 
 interface QuantityStepperProps {
@@ -38,10 +38,10 @@ export function QuantityStepper({ value, unit, onChange, min = 1, max = 999 }: Q
         <Ionicons name="remove" size={18} color={canDecrement ? colors.sage700 : colors.ink400} />
       </Pressable>
       <Text
-        accessibilityLabel={`${value} ${unit}`}
+        accessibilityLabel={`${value} ${unitLabel(unit)}`}
         className="min-w-[52px] text-center text-sm font-semibold text-ink-900"
       >
-        {value} {unit}
+        {value} {unitLabel(unit)}
       </Text>
       <Pressable
         accessibilityRole="button"

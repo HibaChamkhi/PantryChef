@@ -123,7 +123,17 @@ const en = {
     openStore: 'Open %{name}', searchOn: 'Search "%{item}" on %{name}', emptyList: 'Your shopping list is empty. Add items first.', whereToBuy: 'Where to buy',
     listPreview: 'Your list', refresh: 'Search again',
   },
-  errors: { generic: 'Something went wrong. Please try again.' },
+  errors: {
+    generic: 'Something went wrong. Please try again.', noKey: 'No API key configured.', keyRejected: 'The Claude API key was rejected. Check EXPO_PUBLIC_ANTHROPIC_API_KEY.',
+    busy: 'The chef is busy right now. Please try again in a minute.', badRequest: 'The request was rejected: %{message}', offline: 'Could not reach the Claude API. Check your connection and try again.',
+    apiError: 'The Claude API returned an error (%{status}). Please try again.', cancelled: 'Cancelled.', emptyPantry: 'Add at least one ingredient to your pantry first.',
+    declined: 'The chef declined this request. Try adjusting your pantry list.', incomplete: 'The answer came back incomplete. Please try again.', unreadable: 'The chef returned an unreadable answer. Please try again.',
+    noSteps: 'The chef returned recipes without steps. Please try again.', photoUnreadable: 'The photo could not be read. Please try another one.', photoDeclined: 'The chef declined to analyse this photo.',
+    dishFailed: 'Dish analysis failed. Please try again.', receiptFailed: 'Receipt analysis failed. Please try again.', photoFailed: 'Photo analysis failed. Please try again.', planFailed: 'Something went wrong while planning. Please try again.',
+    crashTitle: 'Something burned', notFoundShelf: 'Nothing on this shelf', notFoundHint: 'The screen you were looking for does not exist.',
+  },
+  misc: { earlier: 'Earlier', later: 'Later', languageName: 'English' },
+  units: { pcs: 'pcs', g: 'g', kg: 'kg', ml: 'ml', l: 'l', cup: 'cup', tbsp: 'tbsp', tsp: 'tsp', bunch: 'bunch', pack: 'pack' },
 };
 
 const fr: typeof en = {
@@ -242,7 +252,17 @@ const fr: typeof en = {
     openStore: 'Ouvrir %{name}', searchOn: 'Chercher « %{item} » sur %{name}', emptyList: 'Votre liste de courses est vide. Ajoutez des articles.', whereToBuy: 'Où acheter',
     listPreview: 'Votre liste', refresh: 'Relancer la recherche',
   },
-  errors: { generic: 'Une erreur est survenue. Réessayez.' },
+  errors: {
+    generic: 'Une erreur est survenue. Réessayez.', noKey: 'Aucune clé API configurée.', keyRejected: 'La clé API Claude a été refusée. Vérifiez EXPO_PUBLIC_ANTHROPIC_API_KEY.',
+    busy: 'Le chef est occupé. Réessayez dans une minute.', badRequest: 'Requête refusée : %{message}', offline: "Impossible de joindre l'API Claude. Vérifiez votre connexion et réessayez.",
+    apiError: "L'API Claude a renvoyé une erreur (%{status}). Réessayez.", cancelled: 'Annulé.', emptyPantry: "Ajoutez d'abord au moins un ingrédient à votre garde-manger.",
+    declined: 'Le chef a refusé cette demande. Ajustez votre liste.', incomplete: 'La réponse est incomplète. Réessayez.', unreadable: 'Le chef a renvoyé une réponse illisible. Réessayez.',
+    noSteps: 'Le chef a renvoyé des recettes sans étapes. Réessayez.', photoUnreadable: 'La photo est illisible. Essayez-en une autre.', photoDeclined: "Le chef a refusé d'analyser cette photo.",
+    dishFailed: "L'analyse du plat a échoué. Réessayez.", receiptFailed: "L'analyse du ticket a échoué. Réessayez.", photoFailed: "L'analyse de la photo a échoué. Réessayez.", planFailed: 'Une erreur est survenue pendant la planification. Réessayez.',
+    crashTitle: 'Quelque chose a brûlé', notFoundShelf: 'Rien sur cette étagère', notFoundHint: "L'écran que vous cherchez n'existe pas.",
+  },
+  misc: { earlier: 'Plus tôt', later: 'Plus tard', languageName: 'French' },
+  units: { pcs: 'pcs', g: 'g', kg: 'kg', ml: 'ml', l: 'l', cup: 'tasse', tbsp: 'c. à s.', tsp: 'c. à c.', bunch: 'botte', pack: 'paquet' },
 };
 
 const ar: typeof en = {
@@ -361,7 +381,17 @@ const ar: typeof en = {
     openStore: 'فتح %{name}', searchOn: 'ابحث عن «%{item}» في %{name}', emptyList: 'قائمة التسوق فارغة. أضف عناصر أولًا.', whereToBuy: 'أين تشتري',
     listPreview: 'قائمتك', refresh: 'ابحث مجددًا',
   },
-  errors: { generic: 'حدث خطأ ما. حاول مجددًا.' },
+  errors: {
+    generic: 'حدث خطأ ما. حاول مجددًا.', noKey: 'لم يُضبط مفتاح API.', keyRejected: 'رُفض مفتاح Claude API. تحقق من EXPO_PUBLIC_ANTHROPIC_API_KEY.',
+    busy: 'الشيف مشغول الآن. حاول بعد دقيقة.', badRequest: 'رُفض الطلب: %{message}', offline: 'تعذّر الوصول إلى Claude API. تحقق من الاتصال وحاول مجددًا.',
+    apiError: 'أعاد Claude API خطأ (%{status}). حاول مجددًا.', cancelled: 'أُلغي.', emptyPantry: 'أضف مكوّنًا واحدًا على الأقل إلى مخزنك أولًا.',
+    declined: 'رفض الشيف هذا الطلب. عدّل قائمة مخزنك.', incomplete: 'عادت الإجابة ناقصة. حاول مجددًا.', unreadable: 'أعاد الشيف إجابة غير مقروءة. حاول مجددًا.',
+    noSteps: 'أعاد الشيف وصفات بلا خطوات. حاول مجددًا.', photoUnreadable: 'تعذّرت قراءة الصورة. جرّب صورة أخرى.', photoDeclined: 'رفض الشيف تحليل هذه الصورة.',
+    dishFailed: 'فشل تحليل الطبق. حاول مجددًا.', receiptFailed: 'فشل تحليل الفاتورة. حاول مجددًا.', photoFailed: 'فشل تحليل الصورة. حاول مجددًا.', planFailed: 'حدث خطأ أثناء التخطيط. حاول مجددًا.',
+    crashTitle: 'شيء ما احترق', notFoundShelf: 'لا شيء على هذا الرف', notFoundHint: 'الشاشة التي تبحث عنها غير موجودة.',
+  },
+  misc: { earlier: 'أبكر', later: 'لاحقًا', languageName: 'Arabic' },
+  units: { pcs: 'قطعة', g: 'غ', kg: 'كغ', ml: 'مل', l: 'ل', cup: 'كوب', tbsp: 'م.ك', tsp: 'م.ص', bunch: 'حزمة', pack: 'عبوة' },
 };
 
 export const i18n = new I18n({ en, fr, ar });
@@ -393,6 +423,16 @@ export function isRtlLocale(locale: Locale): boolean {
 /** Translate helper. Values interpolate as %{name}; pass `count` for plurals. */
 export function t(key: string, options?: Record<string, string | number>): string {
   return i18n.t(key, options);
+}
+
+/** Localised short label for a quantity unit. */
+export function unitLabel(unit: string): string {
+  return i18n.t(`units.${unit}`, { defaultValue: unit });
+}
+
+/** English name of the active language, for model prompts. */
+export function languageName(): string {
+  return i18n.t('misc.languageName');
 }
 
 /** Localised day names for the weekly plan, Monday first. */

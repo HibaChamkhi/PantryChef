@@ -75,8 +75,12 @@ export default function RootLayout() {
   // so the pantry never flashes empty before its items appear.
   if (!hydrated) return null;
 
+  // Mirror the layout immediately for Arabic. The native flag set above makes
+  // the system header follow on the next launch.
+  const direction = isRtlLocale(locale) ? 'rtl' : 'ltr';
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, direction }}>
       <SafeAreaProvider>
         <StatusBar style="dark" />
         <Stack

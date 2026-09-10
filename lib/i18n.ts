@@ -104,7 +104,7 @@ const en = {
   },
   settings: {
     title: 'Settings', diet: 'Diet', dietHint: 'Recipes follow this everywhere in the app.', allergies: 'Avoid', allergiesHint: 'Never suggested in recipes.',
-    customAvoidPlaceholder: 'Add something else to avoid', customAvoidLabel: 'Custom avoid item', addAvoid: 'Add', language: 'Language', languageHint: 'Restart the app to switch the layout direction for Arabic.',
+    customAvoidPlaceholder: 'Add something else to avoid', customAvoidLabel: 'Custom avoid item', addAvoid: 'Add', language: 'Language', languageHint: 'The layout switches straight away. Restart the app once to flip the navigation bar as well.',
     reminders: 'Expiry reminders', remindersHint: 'A notification the day before something expires.', remindersOn: 'Reminders on', remindersOff: 'Reminders off',
     remindersScheduled: { one: '%{count} reminder scheduled', other: '%{count} reminders scheduled', zero: 'No reminders scheduled' }, reminderTime: 'Remind me at',
     permissionDenied: 'Notifications are off for PantryChef. Enable them in Settings to get reminders.', about: 'About', version: 'Version %{version}',
@@ -233,7 +233,7 @@ const fr: typeof en = {
   },
   settings: {
     title: 'Réglages', diet: 'Régime', dietHint: 'Les recettes le respectent partout dans l’app.', allergies: 'À éviter', allergiesHint: 'Jamais proposés dans les recettes.',
-    customAvoidPlaceholder: 'Autre chose à éviter', customAvoidLabel: 'Aliment à éviter', addAvoid: 'Ajouter', language: 'Langue', languageHint: "Redémarrez l'app pour changer le sens de lecture en arabe.",
+    customAvoidPlaceholder: 'Autre chose à éviter', customAvoidLabel: 'Aliment à éviter', addAvoid: 'Ajouter', language: 'Langue', languageHint: "La mise en page change tout de suite. Redémarrez l'app une fois pour inverser aussi la barre de navigation.",
     reminders: 'Rappels de péremption', remindersHint: 'Une notification la veille de la date limite.', remindersOn: 'Rappels activés', remindersOff: 'Rappels désactivés',
     remindersScheduled: { one: '%{count} rappel programmé', other: '%{count} rappels programmés', zero: 'Aucun rappel programmé' }, reminderTime: 'Me rappeler à',
     permissionDenied: 'Les notifications sont désactivées pour PantryChef. Activez-les dans Réglages.', about: 'À propos', version: 'Version %{version}',
@@ -362,7 +362,7 @@ const ar: typeof en = {
   },
   settings: {
     title: 'الإعدادات', diet: 'النظام الغذائي', dietHint: 'تلتزم الوصفات به في كل التطبيق.', allergies: 'تجنّب', allergiesHint: 'لن تُقترح في الوصفات أبدًا.',
-    customAvoidPlaceholder: 'أضف شيئًا آخر لتجنّبه', customAvoidLabel: 'عنصر مخصص لتجنّبه', addAvoid: 'إضافة', language: 'اللغة', languageHint: 'أعد تشغيل التطبيق لتبديل اتجاه الواجهة للعربية.',
+    customAvoidPlaceholder: 'أضف شيئًا آخر لتجنّبه', customAvoidLabel: 'عنصر مخصص لتجنّبه', addAvoid: 'إضافة', language: 'اللغة', languageHint: 'تتبدّل الواجهة فورًا. أعد تشغيل التطبيق مرة واحدة لقلب شريط التنقل أيضًا.',
     reminders: 'تذكيرات الانتهاء', remindersHint: 'إشعار قبل يوم من انتهاء صلاحية عنصر.', remindersOn: 'التذكيرات مفعّلة', remindersOff: 'التذكيرات معطّلة',
     remindersScheduled: { one: 'تذكير واحد مجدول', other: '%{count} تذكيرات مجدولة', zero: 'لا تذكيرات مجدولة' }, reminderTime: 'ذكّرني في',
     permissionDenied: 'الإشعارات معطّلة لـ PantryChef. فعّلها من الإعدادات للحصول على تذكيرات.', about: 'حول', version: 'الإصدار %{version}',

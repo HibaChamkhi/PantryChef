@@ -65,7 +65,7 @@ keep every screen working.
 - Vegetarian, vegan, pescatarian, halal, kosher and gluten-free diets, plus allergens and a custom avoid list.
 - English, French and Arabic across the whole app: every screen and error message, the offline
   chef's recipes, the simulated scans, unit labels and dates. Claude is asked to answer in the
-  chosen language, and Arabic switches the layout to right-to-left after a restart.
+  chosen language, and Arabic mirrors the layout to right-to-left immediately.
 
 ## Tech stack
 

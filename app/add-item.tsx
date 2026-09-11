@@ -363,8 +363,8 @@ export default function AddItemScreen() {
         options={{
           title: t('addItem.title'),
           headerLeft: () => (
-            <Pressable accessibilityRole="button" accessibilityLabel={t('common.cancel')} onPress={close} hitSlop={8}>
-              <Text className="text-base text-sage-700">{t('common.cancel')}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('common.cancel')} onPress={close} hitSlop={8} className="min-w-[44px] items-center justify-center px-2">
+              <Text className="text-center text-base text-sage-700">{t('common.cancel')}</Text>
             </Pressable>
           ),
         }}

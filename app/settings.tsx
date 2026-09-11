@@ -91,8 +91,8 @@ export default function SettingsScreen() {
         options={{
           title: t('settings.title'),
           headerLeft: () => (
-            <Pressable accessibilityRole="button" accessibilityLabel={t('common.done')} onPress={close} hitSlop={8}>
-              <Text className="text-base font-semibold text-sage-700">{t('common.done')}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('common.done')} onPress={close} hitSlop={8} className="min-w-[44px] items-center justify-center px-2">
+              <Text className="text-center text-base font-semibold text-sage-700">{t('common.done')}</Text>
             </Pressable>
           ),
         }}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Switch, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +16,7 @@ import { ensurePermission, scheduledReminderCount, syncExpiryReminders } from '@
 import { useInventoryStore } from '@/store/useInventoryStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { ALLERGENS, DIETS, LANGUAGES } from '@/types';
+import { Text, TextInput } from '@/components/ui/Text';
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (

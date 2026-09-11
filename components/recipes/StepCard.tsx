@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { StepTimer } from '@/components/recipes/StepTimer';
@@ -7,6 +7,7 @@ import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { RecipeStep } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 interface StepCardProps {
   step: RecipeStep;

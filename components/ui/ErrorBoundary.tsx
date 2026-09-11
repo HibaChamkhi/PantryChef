@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import type { ErrorBoundaryProps } from 'expo-router';
 
 import { t } from '@/lib/i18n';
+import { Text } from '@/components/ui/Text';
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return (

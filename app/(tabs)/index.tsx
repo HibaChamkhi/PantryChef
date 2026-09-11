@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -17,6 +17,8 @@ import { runRecipeGeneration } from '@/services/generation';
 import { expiringSoon, sortNewestFirst, useInventoryStore } from '@/store/useInventoryStore';
 import { monthlyStats, useStatsStore } from '@/store/useStatsStore';
 import type { InventoryItem } from '@/types';
+import { Text, TextInput } from '@/components/ui/Text';
+import type { TextInput as RNTextInputType } from 'react-native';
 
 function expiryWord(item: InventoryItem): string {
   const days = item.expiresAt ? daysUntil(item.expiresAt) : Number.POSITIVE_INFINITY;
@@ -96,7 +98,7 @@ export default function PantryScreen() {
   const removeItem = useInventoryStore((state) => state.removeItem);
   const clear = useInventoryStore((state) => state.clear);
 
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<RNTextInputType>(null);
 
   const subtitle = useMemo(() => {
     if (items.length === 0) return t('pantry.emptySubtitle');

@@ -1,10 +1,12 @@
 import { forwardRef, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { normalizeName } from '@/lib/utils';
+import { TextInput } from '@/components/ui/Text';
+import type { TextInput as RNTextInputType } from 'react-native';
 
 interface QuickAddBarProps {
   onAdd: (name: string) => void;
@@ -14,7 +16,7 @@ interface QuickAddBarProps {
 }
 
 /** Single-line input for quickly adding an ingredient by name. */
-export const QuickAddBar = forwardRef<TextInput, QuickAddBarProps>(function QuickAddBar(
+export const QuickAddBar = forwardRef<RNTextInputType, QuickAddBarProps>(function QuickAddBar(
   { onAdd, placeholder, accessibilityLabel, buttonLabel },
   ref,
 ) {

@@ -1,5 +1,5 @@
 import { memo, useRef } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import ReanimatedSwipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -10,6 +10,7 @@ import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { daysUntil, formatRelativeDate } from '@/lib/utils';
 import type { InventoryItem } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 interface InventoryItemRowProps {
   item: InventoryItem;

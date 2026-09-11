@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -19,6 +19,7 @@ import { useInventoryStore } from '@/store/useInventoryStore';
 import { useRecipeStore } from '@/store/useRecipeStore';
 import { useShoppingStore } from '@/store/useShoppingStore';
 import type { Difficulty } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 function Meta({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (

@@ -1,6 +1,7 @@
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { colors } from '@/constants/theme';
+import { Text } from '@/components/ui/Text';
 
 interface LoadingOverlayProps {
   visible: boolean;

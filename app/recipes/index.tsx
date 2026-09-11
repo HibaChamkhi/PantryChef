@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 
@@ -16,6 +16,7 @@ import { useInventoryStore } from '@/store/useInventoryStore';
 import { useRecipeStore } from '@/store/useRecipeStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { CUISINES, type Recipe } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 const TIME_OPTIONS: Array<{ key: 'anyTime' | 'under30' | 'under60'; minutes: number | null }> = [
   { key: 'anyTime', minutes: null },

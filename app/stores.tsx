@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +16,7 @@ import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { findNearbyStores, formatDistance, onlineStoresForRegion, storeSearchUrl, type Coordinates, type NearbyStore } from '@/services/stores';
 import { useShoppingStore } from '@/store/useShoppingStore';
+import { Text } from '@/components/ui/Text';
 
 type Mode = 'nearby' | 'online';
 type Phase = 'idle' | 'locating' | 'searching' | 'ready' | 'noLocation' | 'error';

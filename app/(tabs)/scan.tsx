@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -18,6 +18,7 @@ import { useInventoryStore } from '@/store/useInventoryStore';
 import { useRecipeStore } from '@/store/useRecipeStore';
 import { selectPreferences, useSettingsStore } from '@/store/useSettingsStore';
 import type { Recipe } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 export default function ScanScreen() {
   const router = useRouter();

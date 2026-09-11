@@ -1,10 +1,11 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 import { colors } from '@/constants/theme';
 import { t, unitLabel } from '@/lib/i18n';
 import type { Unit } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 interface QuantityStepperProps {
   value: number;

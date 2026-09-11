@@ -1,9 +1,10 @@
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import type { IconName } from '@/components/ui/Button';
 import { colors } from '@/constants/theme';
 import { cn } from '@/lib/utils';
+import { Text } from '@/components/ui/Text';
 
 interface ChipProps {
   label: string;

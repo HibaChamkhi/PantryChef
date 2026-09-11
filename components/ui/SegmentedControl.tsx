@@ -1,9 +1,10 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import type { IconName } from '@/components/ui/Button';
 import { colors } from '@/constants/theme';
 import { cn } from '@/lib/utils';
+import { Text } from '@/components/ui/Text';
 
 export interface SegmentOption<T extends string> {
   value: T;

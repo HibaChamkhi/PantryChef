@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
@@ -7,6 +7,7 @@ import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { formatDuration } from '@/lib/utils';
 import type { Difficulty, Recipe } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 interface RecipeCardProps {
   recipe: Recipe;

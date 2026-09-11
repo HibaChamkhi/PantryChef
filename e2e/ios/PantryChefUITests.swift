@@ -41,7 +41,7 @@ final class PantryChefUITests: XCTestCase {
     }
 
     private func anyText(containing fragment: String) -> XCUIElement {
-        app.descendants(matching: .any).containing(NSPredicate(format: "label CONTAINS[cd] %@", fragment)).firstMatch
+        app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS[cd] %@", fragment)).firstMatch
     }
 
     private func any(_ label: String) -> XCUIElement {
@@ -327,7 +327,7 @@ extension PantryChefUITests {
         // Shopping tab shows the lines; check one and move it to the pantry.
         tab("Shopping").tap()
         waitFor(app.staticTexts["Shopping list"])
-        let firstLine = app.descendants(matching: .any).containing(NSPredicate(format: "label BEGINSWITH 'Mark '")).firstMatch
+        let firstLine = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH 'Mark '")).firstMatch
         waitFor(firstLine)
         let lineLabel = firstLine.label
         firstLine.tap()

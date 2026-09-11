@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { RecipeCard } from '@/components/recipes/RecipeCard';
@@ -8,6 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { t } from '@/lib/i18n';
 import { useRecipeStore } from '@/store/useRecipeStore';
 import type { Recipe } from '@/types';
+import { Text } from '@/components/ui/Text';
 
 export default function SavedScreen() {
   const saved = useRecipeStore((state) => state.saved);

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +20,8 @@ import { recognizeReceipt } from '@/services/receipt';
 import { recognizeIngredients, type DetectedIngredient, type PhotoInput } from '@/services/vision';
 import { useInventoryStore } from '@/store/useInventoryStore';
 import { CATEGORIES, UNITS, type Category, type Unit } from '@/types';
+import { Text, TextInput } from '@/components/ui/Text';
+import type { TextInput as RNTextInputType } from 'react-native';
 
 type Mode = 'manual' | 'photo' | 'receipt';
 
@@ -54,7 +56,7 @@ function ManualForm({ onSaved, onScanBarcode }: { onSaved: () => void; onScanBar
   const [category, setCategory] = useState<Category>('other');
   const [categoryTouched, setCategoryTouched] = useState(false);
   const [expiryDays, setExpiryDays] = useState<number | null>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<RNTextInputType>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => inputRef.current?.focus(), 350);

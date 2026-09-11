@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -14,6 +14,8 @@ import { t } from '@/lib/i18n';
 import { useInventoryStore } from '@/store/useInventoryStore';
 import { useShoppingStore } from '@/store/useShoppingStore';
 import type { ShoppingItem } from '@/types';
+import { Text, TextInput } from '@/components/ui/Text';
+import type { TextInput as RNTextInputType } from 'react-native';
 
 function Row({ item, onToggle, onRemove }: { item: ShoppingItem; onToggle: (id: string) => void; onRemove: (id: string) => void }) {
   return (
@@ -65,7 +67,7 @@ export default function ShoppingScreen() {
   const removeChecked = useShoppingStore((state) => state.removeChecked);
   const clear = useShoppingStore((state) => state.clear);
   const addToPantry = useInventoryStore((state) => state.addMany);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<RNTextInputType>(null);
 
   const sorted = useMemo(() => [...items].sort((a, b) => Number(a.checked) - Number(b.checked)), [items]);
   const checkedCount = useMemo(() => items.filter((item) => item.checked).length, [items]);

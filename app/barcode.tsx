@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Keyboard, Pressable, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
@@ -13,6 +13,7 @@ import { colors } from '@/constants/theme';
 import { t } from '@/lib/i18n';
 import { BarcodeError, isPlausibleBarcode, lookupBarcode, type BarcodeProduct } from '@/services/barcode';
 import { useInventoryStore } from '@/store/useInventoryStore';
+import { Text, TextInput } from '@/components/ui/Text';
 
 type Phase = 'scanning' | 'looking' | 'found' | 'notFound' | 'error';
 
